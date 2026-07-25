@@ -11,9 +11,4 @@
   <Folder Name="/src/Presentation/">
     <Project Path="src/Presentation/GmbhSystem.Api/GmbhSystem.Api.csproj" />
   </Folder>
-  <Folder Name="/tests/">
-    <Project Path="tests/GmbhSystem.Api.IntegrationTests/GmbhSystem.Api.IntegrationTests.csproj" />
-    <Project Path="tests/GmbhSystem.Application.Tests/GmbhSystem.Application.Tests.csproj" />
-    <Project Path="tests/GmbhSystem.Domain.Tests/GmbhSystem.Domain.Tests.csproj" />
-  </Folder>
 </Solution>
