@@ -1,9 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "oHaKvfS7sdU=",
+  "dgSpecHash": "ogmv6bNp0Z0=",
   "success": true,
   "projectFilePath": "/Users/minthukha/Projects/GmbhSystemAPI/src/Presentation/GmbhSystem.Api/GmbhSystem.Api.csproj",
   "expectedPackageFiles": [
+    "/Users/minthukha/.nuget/packages/bcrypt/1.0.0/bcrypt.1.0.0.nupkg.sha512",
+    "/Users/minthukha/.nuget/packages/bcrypt.net-next/4.2.0/bcrypt.net-next.4.2.0.nupkg.sha512",
     "/Users/minthukha/.nuget/packages/humanizer.core/2.14.1/humanizer.core.2.14.1.nupkg.sha512",
     "/Users/minthukha/.nuget/packages/microsoft.aspnetcore.authentication.jwtbearer/9.0.4/microsoft.aspnetcore.authentication.jwtbearer.9.0.4.nupkg.sha512",
     "/Users/minthukha/.nuget/packages/microsoft.aspnetcore.openapi/10.0.10/microsoft.aspnetcore.openapi.10.0.10.nupkg.sha512",
@@ -46,5 +48,18 @@
     "/Users/minthukha/.nuget/packages/system.composition.typedparts/9.0.0/system.composition.typedparts.9.0.0.nupkg.sha512",
     "/Users/minthukha/.nuget/packages/system.identitymodel.tokens.jwt/8.0.1/system.identitymodel.tokens.jwt.8.0.1.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "message": "Package 'BCrypt 1.0.0' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net10.0'. This package may not be fully compatible with your project.",
+      "projectPath": "/Users/minthukha/Projects/GmbhSystemAPI/src/Presentation/GmbhSystem.Api/GmbhSystem.Api.csproj",
+      "warningLevel": 1,
+      "filePath": "/Users/minthukha/Projects/GmbhSystemAPI/src/Presentation/GmbhSystem.Api/GmbhSystem.Api.csproj",
+      "libraryId": "BCrypt",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    }
+  ]
 }

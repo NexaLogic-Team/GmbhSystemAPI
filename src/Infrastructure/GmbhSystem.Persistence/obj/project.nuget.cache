@@ -1,9 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "WGIdwuS0cUY=",
+  "dgSpecHash": "XBYyF359izc=",
   "success": true,
   "projectFilePath": "/Users/minthukha/Projects/GmbhSystemAPI/src/Infrastructure/GmbhSystem.Persistence/GmbhSystem.Persistence.csproj",
   "expectedPackageFiles": [
+    "/Users/minthukha/.nuget/packages/bcrypt/1.0.0/bcrypt.1.0.0.nupkg.sha512",
+    "/Users/minthukha/.nuget/packages/bcrypt.net-next/4.2.0/bcrypt.net-next.4.2.0.nupkg.sha512",
     "/Users/minthukha/.nuget/packages/humanizer.core/2.14.1/humanizer.core.2.14.1.nupkg.sha512",
     "/Users/minthukha/.nuget/packages/microsoft.build.framework/18.0.2/microsoft.build.framework.18.0.2.nupkg.sha512",
     "/Users/minthukha/.nuget/packages/microsoft.codeanalysis.analyzers/3.11.0/microsoft.codeanalysis.analyzers.3.11.0.nupkg.sha512",
@@ -27,6 +29,10 @@
     "/Users/minthukha/.nuget/packages/microsoft.extensions.logging.abstractions/10.0.10/microsoft.extensions.logging.abstractions.10.0.10.nupkg.sha512",
     "/Users/minthukha/.nuget/packages/microsoft.extensions.options/10.0.10/microsoft.extensions.options.10.0.10.nupkg.sha512",
     "/Users/minthukha/.nuget/packages/microsoft.extensions.primitives/10.0.10/microsoft.extensions.primitives.10.0.10.nupkg.sha512",
+    "/Users/minthukha/.nuget/packages/microsoft.identitymodel.abstractions/8.0.1/microsoft.identitymodel.abstractions.8.0.1.nupkg.sha512",
+    "/Users/minthukha/.nuget/packages/microsoft.identitymodel.jsonwebtokens/8.0.1/microsoft.identitymodel.jsonwebtokens.8.0.1.nupkg.sha512",
+    "/Users/minthukha/.nuget/packages/microsoft.identitymodel.logging/8.0.1/microsoft.identitymodel.logging.8.0.1.nupkg.sha512",
+    "/Users/minthukha/.nuget/packages/microsoft.identitymodel.tokens/8.0.1/microsoft.identitymodel.tokens.8.0.1.nupkg.sha512",
     "/Users/minthukha/.nuget/packages/microsoft.visualstudio.solutionpersistence/1.0.52/microsoft.visualstudio.solutionpersistence.1.0.52.nupkg.sha512",
     "/Users/minthukha/.nuget/packages/mono.texttemplating/3.0.0/mono.texttemplating.3.0.0.nupkg.sha512",
     "/Users/minthukha/.nuget/packages/newtonsoft.json/13.0.3/newtonsoft.json.13.0.3.nupkg.sha512",
@@ -38,7 +44,21 @@
     "/Users/minthukha/.nuget/packages/system.composition.convention/9.0.0/system.composition.convention.9.0.0.nupkg.sha512",
     "/Users/minthukha/.nuget/packages/system.composition.hosting/9.0.0/system.composition.hosting.9.0.0.nupkg.sha512",
     "/Users/minthukha/.nuget/packages/system.composition.runtime/9.0.0/system.composition.runtime.9.0.0.nupkg.sha512",
-    "/Users/minthukha/.nuget/packages/system.composition.typedparts/9.0.0/system.composition.typedparts.9.0.0.nupkg.sha512"
+    "/Users/minthukha/.nuget/packages/system.composition.typedparts/9.0.0/system.composition.typedparts.9.0.0.nupkg.sha512",
+    "/Users/minthukha/.nuget/packages/system.identitymodel.tokens.jwt/8.0.1/system.identitymodel.tokens.jwt.8.0.1.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "message": "Package 'BCrypt 1.0.0' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net10.0'. This package may not be fully compatible with your project.",
+      "projectPath": "/Users/minthukha/Projects/GmbhSystemAPI/src/Infrastructure/GmbhSystem.Persistence/GmbhSystem.Persistence.csproj",
+      "warningLevel": 1,
+      "filePath": "/Users/minthukha/Projects/GmbhSystemAPI/src/Infrastructure/GmbhSystem.Persistence/GmbhSystem.Persistence.csproj",
+      "libraryId": "BCrypt",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    }
+  ]
 }
