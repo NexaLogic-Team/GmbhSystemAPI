@@ -9,10 +9,7 @@ using GmbhSystem.Persistence.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add Layers DI
 builder.Services.AddPersistence(builder.Configuration);
-// builder.Services.AddApplication();
-// builder.Services.AddInfrastructure();
 
 var jwtKey = builder.Configuration["Jwt:Key"] ?? builder.Configuration["Jwt:Secret"];
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
