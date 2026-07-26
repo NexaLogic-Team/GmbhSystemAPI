@@ -1,5 +1,8 @@
 <Solution>
-  <Folder Name="/src/" />
+  <Folder Name="/src/">
+    <File Path=".dockerignore" />
+    <File Path="Dockerfile" />
+  </Folder>
   <Folder Name="/src/Core/">
     <Project Path="src/Core/GmbhSystem.Application/GmbhSystem.Application.csproj" />
     <Project Path="src/Core/GmbhSystem.Domain/GmbhSystem.Domain.csproj" />
