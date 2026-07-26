@@ -1,9 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "ogmv6bNp0Z0=",
+  "dgSpecHash": "OwfgMNXsk3A=",
   "success": true,
   "projectFilePath": "/Users/minthukha/Projects/GmbhSystemAPI/src/Presentation/GmbhSystem.Api/GmbhSystem.Api.csproj",
   "expectedPackageFiles": [
+    "/Users/minthukha/.nuget/packages/awssdk.core/4.0.100.8/awssdk.core.4.0.100.8.nupkg.sha512",
+    "/Users/minthukha/.nuget/packages/awssdk.s3/4.0.101.4/awssdk.s3.4.0.101.4.nupkg.sha512",
     "/Users/minthukha/.nuget/packages/bcrypt/1.0.0/bcrypt.1.0.0.nupkg.sha512",
     "/Users/minthukha/.nuget/packages/bcrypt.net-next/4.2.0/bcrypt.net-next.4.2.0.nupkg.sha512",
     "/Users/minthukha/.nuget/packages/humanizer.core/2.14.1/humanizer.core.2.14.1.nupkg.sha512",

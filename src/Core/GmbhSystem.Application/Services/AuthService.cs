@@ -14,12 +14,10 @@ public class AuthService : IAuthService
         _jwtProvider = jwtProvider;
     }
 
-    // Fixed: Changed Task to Task<string?>
     public async Task<string?> LoginAsync(LoginDto request, CancellationToken cancellationToken = default)
     {
-        var user = await _userRepository.GetByUsernameAsync(request.Username, cancellationToken);
+        var user = await _userRepository.GetByEmailAsync(request.Email, cancellationToken);
         
-        // Verify user exists and password matches the hash
         if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
         {
             return null; 

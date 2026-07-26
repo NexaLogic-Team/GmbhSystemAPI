@@ -1,9 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "A0rIzROFI+g=",
+  "dgSpecHash": "FJcmJkbOtSA=",
   "success": true,
   "projectFilePath": "/Users/minthukha/Projects/GmbhSystemAPI/src/Infrastructure/GmbhSystem.Infrastructure/GmbhSystem.Infrastructure.csproj",
   "expectedPackageFiles": [
+    "/Users/minthukha/.nuget/packages/awssdk.core/4.0.100.8/awssdk.core.4.0.100.8.nupkg.sha512",
+    "/Users/minthukha/.nuget/packages/awssdk.s3/4.0.101.4/awssdk.s3.4.0.101.4.nupkg.sha512",
     "/Users/minthukha/.nuget/packages/bcrypt/1.0.0/bcrypt.1.0.0.nupkg.sha512",
     "/Users/minthukha/.nuget/packages/bcrypt.net-next/4.2.0/bcrypt.net-next.4.2.0.nupkg.sha512"
   ],

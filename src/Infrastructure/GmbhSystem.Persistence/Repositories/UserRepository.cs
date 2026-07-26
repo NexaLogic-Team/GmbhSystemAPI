@@ -13,9 +13,9 @@ public class UserRepository : IUserRepository
         _dbContext = dbContext;
     }
 
-    public async Task<User?> GetByUsernameAsync(string username, CancellationToken cancellationToken = default)
+    public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Set<User>()
-            .FirstOrDefaultAsync(u => u.Username == username, cancellationToken);
+        return await _dbContext.Users
+            .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
     }
 }

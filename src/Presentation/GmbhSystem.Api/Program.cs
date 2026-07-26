@@ -2,8 +2,10 @@ using GmbhSystem.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using GmbhSystem.Api.Middlewares;
 using GmbhSystem.Application.Interfaces;
 using GmbhSystem.Application.Services;
+using GmbhSystem.Infrastructure.Services;
 using GmbhSystem.Persistence.Authentication;
 using GmbhSystem.Persistence.Repositories;
 
@@ -34,8 +36,37 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer((document, context, cancellationToken) =>
+    {
+        document.Components ??= new Microsoft.OpenApi.OpenApiComponents();
+        
+        document.Components.SecuritySchemes = new Dictionary<string, Microsoft.OpenApi.IOpenApiSecurityScheme>
+        {
+            ["Bearer"] = new Microsoft.OpenApi.OpenApiSecurityScheme
+            {
+                Type = Microsoft.OpenApi.SecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT"
+            }
+        };
+
+        document.Security = new List<Microsoft.OpenApi.OpenApiSecurityRequirement>
+        {
+            new Microsoft.OpenApi.OpenApiSecurityRequirement
+            {
+                [new Microsoft.OpenApi.OpenApiSecuritySchemeReference("Bearer", document)] = []
+            }
+        };
+
+        return Task.CompletedTask;
+    });
+});
+
+builder.Services.AddScoped<IMediaService, CloudflareR2Service>();
+builder.Services.AddScoped<IContentRepository, ContentRepository>(); 
 builder.Services.AddScoped<IUserRepository, UserRepository>(); 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtProvider, JwtProvider>();
@@ -54,8 +85,12 @@ catch (Exception ex)
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
+    app.MapOpenApi();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/openapi/v1.json", "GmbhSystem API v1");
+    });
 }
 
 app.UseHttpsRedirection();
@@ -64,5 +99,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.Run();
