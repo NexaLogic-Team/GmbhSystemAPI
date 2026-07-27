@@ -3,6 +3,7 @@ using GmbhSystem.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using GmbhSystem.Infrastructure.Services;
 
 namespace GmbhSystem.Api.Controller;
 
@@ -12,11 +13,13 @@ public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
     private readonly IUserRepository _userRepository;
+    private readonly IMediaService _mediaService;
 
-    public AuthController(IAuthService authService, IUserRepository userRepository) 
+    public AuthController(IAuthService authService, IUserRepository userRepository, IMediaService mediaService)
     {
         _authService = authService;
         _userRepository = userRepository;
+        _mediaService = mediaService;
     }
 
     [HttpPost("login")]
@@ -26,9 +29,9 @@ public class AuthController : ControllerBase
         {
             return BadRequest(ModelState);
         }
-        
+
         var token = await _authService.LoginAsync(request, cancellationToken);
-        
+
         if (token is null)
         {
             return Unauthorized(new { Message = "Invalid username or password." });
@@ -36,6 +39,42 @@ public class AuthController : ControllerBase
 
         return Ok(new { Token = token });
     }
+
+    // [HttpGet("profile")]
+    // [Authorize]
+    // public async Task<IActionResult> GetProfile()
+    // {
+    //     var email = User.FindFirst(ClaimTypes.Email)?.Value 
+    //                 ?? User.FindFirst(Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames.Email)?.Value
+    //                 ?? User.Claims.FirstOrDefault(c => c.Type == "email" || c.Type.Contains("emailaddress"))?.Value;
+    //
+    //     if (string.IsNullOrEmpty(email)) 
+    //     {
+    //         return Unauthorized(new { message = "Email claim not found in the provided token." });
+    //     }
+    //
+    //     string fileName = $"profiles/{email}.png";
+    //     string bucketName = "gmbh";
+    //
+    //     var mediaContent = await _mediaService.GetContentAsync(bucketName, fileName);
+    //
+    //     if (string.IsNullOrEmpty(mediaContent))
+    //     {
+    //         var user = await _userRepository.GetByEmailAsync(email);
+    //         if (user == null) return NotFound(new { message = "User not found" });
+    //
+    //         return Ok(new
+    //         {
+    //             fullName = user.FullName,
+    //             username = user.Username,
+    //             email = user.Email,
+    //             role = user.Role
+    //         });
+    //     }
+    //
+    //     var profileObj = System.Text.Json.JsonSerializer.Deserialize<object>(mediaContent);
+    //     return Ok(profileObj);
+    // }
     
     [HttpGet("profile")]
     [Authorize]
@@ -50,15 +89,47 @@ public class AuthController : ControllerBase
             return Unauthorized(new { message = "Email claim not found in the provided token." });
         }
 
-        var user = await _userRepository.GetByEmailAsync(email);
-        if (user == null) return NotFound(new { message = "User not found" });
+        string bucketName = "gmbh";
+    
+        string jsonKey = $"profiles:{email}.json";
+        string imageKey = $"profiles:{email}.png";
+
+        string? profileImageUrl = null;
+        try
+        {
+            profileImageUrl = await _mediaService.GeneratePresignedUrlAsync(bucketName, imageKey);
+        }
+        catch
+        {
+            profileImageUrl = null;
+        }
+
+        var jsonContent = await _mediaService.GetContentAsync(bucketName, jsonKey);
+
+        if (string.IsNullOrEmpty(jsonContent))
+        {
+            var user = await _userRepository.GetByEmailAsync(email);
+            if (user == null) return NotFound(new { message = "User not found" });
+
+            return Ok(new
+            {
+                fullName = user.FullName,
+                username = user.Username,
+                email = user.Email,
+                role = user.Role,
+                profileImage = profileImageUrl
+            });
+        }
+
+        var profileObj = System.Text.Json.JsonSerializer.Deserialize<System.Text.Json.JsonElement>(jsonContent);
 
         return Ok(new
         {
-            fullName = user.FullName,
-            username = user.Username,
-            email = user.Email,
-            role = user.Role
+            fullName = profileObj.TryGetProperty("fullName", out var fn) ? fn.GetString() : "",
+            username = profileObj.TryGetProperty("username", out var un) ? un.GetString() : "",
+            email = email,
+            role = profileObj.TryGetProperty("role", out var r) ? r.GetString() : "",
+            profileImage = profileImageUrl
         });
     }
 }

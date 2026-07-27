@@ -19,7 +19,7 @@ public static class DbInitializer
             {
                 Id = Guid.NewGuid().ToString(),
                 Username = "gmbh",
-                Email = "gbmh@gmail.com",
+                Email = "gmbh@gmail.com",
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword("123@gmbh.com"),
                 Role = "Admin",
                 CreatedAt = DateTime.UtcNow

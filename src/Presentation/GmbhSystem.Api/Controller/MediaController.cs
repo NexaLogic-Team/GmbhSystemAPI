@@ -15,49 +15,39 @@ public class MediaController : ControllerBase
         _mediaService = mediaService;
     }
 
-    // 1. POST: api/cms/media/upload (Image & Video Write to R2)
     [HttpPost("upload")]
-    // [Authorize]
-    public async Task<IActionResult> Upload(IFormFile file, CancellationToken cancellationToken)
+    public async Task<IActionResult> UploadFile(IFormFile file, [FromQuery] string bucketName)
     {
+        if (file == null || file.Length == 0)
+            return BadRequest("No file uploaded.");
+
+        var tempFilePath = Path.GetTempFileName();
+        using (var stream = new System.IO.FileStream(tempFilePath, System.IO.FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
         try
         {
-            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".mp4", ".mov", ".avi", ".webp" };
-            var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+            var etag = await _mediaService.UploadFileAsync(tempFilePath, bucketName);
 
-            if (!allowedExtensions.Contains(extension))
-            {
-                return BadRequest(new { message = "Invalid file type. Only images and videos are allowed." });
-            }
+            System.IO.File.Delete(tempFilePath);
 
-            var fileName = await _mediaService.UploadFileAsync(file, cancellationToken);
-            var fileUrl = $"{Request.Scheme}://{Request.Host}/api/cms/media/{fileName}";
-
-            return Ok(new
-            {
-                message = "Media uploaded successfully to Cloudflare R2.",
-                fileName = fileName,
-                url = fileUrl
-            });
+            return Ok(new { Message = "Upload successful", ETag = etag, FileName = file.FileName });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "Upload failed", error = ex.Message });
+            if (System.IO.File.Exists(tempFilePath))
+                System.IO.File.Delete(tempFilePath);
+
+            return StatusCode(StatusCodes.Status500InternalServerError, $"Error: {ex.Message}");
         }
     }
 
-    // 2. GET: api/cms/media/{fileName} (Image & Video Read from R2)
-    [HttpGet("{fileName}")]
-    public async Task<IActionResult> Get(string fileName, CancellationToken cancellationToken)
+    [HttpGet("presigned-url")]
+    public async Task<IActionResult> GetPresignedUrl([FromQuery] string bucketName, [FromQuery] string key)
     {
-        try
-        {
-            var (stream, contentType) = await _mediaService.GetFileAsync(fileName, cancellationToken);
-            return File(stream, contentType);
-        }
-        catch
-        {
-            return NotFound(new { message = "File not found in R2 storage." });
-        }
+        var url = await _mediaService.GeneratePresignedUrlAsync(bucketName, key);
+        return Ok(new { PresignedUrl = url });
     }
 }
