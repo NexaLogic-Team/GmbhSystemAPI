@@ -1,46 +1,36 @@
 using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 
 namespace GmbhSystem.Infrastructure.Services;
 
 public interface IMediaService
 {
-    Task<string> UploadFileAsync(string filePath, string bucketName);
+    Task<string> UploadFileAsync(Stream stream, string fileName, string bucketName, string contentType);
     Task<Stream> GetFileAsync(string bucketName, string key);
     Task<string> GeneratePresignedUrlAsync(string bucketName, string key);
     Task UploadContentAsync(string bucketName, string key, string content);
-    Task<string> GetContentAsync(string bucketName, string key);
+    Task<string?> GetContentAsync(string bucketName, string key);
 }
 
 public class CloudflareR2Service : IMediaService
 {
     private readonly IAmazonS3 _s3Client;
 
-    public CloudflareR2Service(IConfiguration configuration)
+    public CloudflareR2Service(IAmazonS3 s3Client)
     {
-        var accessKey = configuration["CloudflareR2:AccessKey"]!;
-        var secretKey = configuration["CloudflareR2:SecretKey"]!;
-        var accountId = configuration["CloudflareR2:AccountId"]!;
-
-        var credentials = new BasicAWSCredentials(accessKey, secretKey);
-        _s3Client = new AmazonS3Client(credentials, new AmazonS3Config
-        {
-            ServiceURL = $"https://{accountId}.r2.cloudflarestorage.com",
-            ForcePathStyle = true,
-            AuthenticationRegion = "auto",
-        });
+        _s3Client = s3Client;
     }
 
-    public async Task<string> UploadFileAsync(string filePath, string bucketName)
+    public async Task<string> UploadFileAsync(Stream stream, string fileName, string bucketName, string contentType)
     {
         var request = new PutObjectRequest
         {
-            FilePath = filePath,
+            InputStream = stream,
             BucketName = bucketName,
-            Key = Path.GetFileName(filePath),
+            Key = fileName, // မူရင်း File Name ကို Key အဖြစ် သုံးမည်
+            ContentType = contentType,
             DisablePayloadSigning = true,
             DisableDefaultChecksumValidation = true,
             UseChunkEncoding = false
@@ -63,12 +53,12 @@ public class CloudflareR2Service : IMediaService
             BucketName = bucketName,
             Key = key,
             Verb = HttpVerb.GET,
-            Expires = DateTime.Now.AddDays(7),
+            Expires = DateTime.UtcNow.AddDays(7) // UTC သုံးထားသည်
         };
 
         return await Task.FromResult(_s3Client.GetPreSignedURL(presign));
     }
-    
+
     public async Task UploadContentAsync(string bucketName, string key, string content)
     {
         using var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(content));
@@ -85,7 +75,7 @@ public class CloudflareR2Service : IMediaService
         await _s3Client.PutObjectAsync(request);
     }
 
-    public async Task<string> GetContentAsync(string bucketName, string key)
+    public async Task<string?> GetContentAsync(string bucketName, string key)
     {
         try
         {
@@ -95,7 +85,7 @@ public class CloudflareR2Service : IMediaService
         }
         catch (AmazonS3Exception ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
         {
-            return null!;
+            return null;
         }
     }
 }

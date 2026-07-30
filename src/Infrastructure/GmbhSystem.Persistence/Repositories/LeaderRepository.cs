@@ -13,11 +13,23 @@ public class LeaderRepository : ILeaderRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<LeaderItem>> GetAllAsync(string language, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<LeaderItem>> GetAllAsync(string language,
+        CancellationToken cancellationToken = default)
     {
         return await _context.LeaderItems
             .Where(l => l.Language == language)
-            .OrderBy(l => l.Id)
+            .OrderBy(l => l.DisplayOrder) // DisplayOrder မရှိသေးရင် Id အလိုက် စီပေးပါမယ်
+            .ThenBy(l => l.Id)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<LeaderItem>> GetAllOrderedAsync(string language,
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.LeaderItems
+            .Where(l => l.Language == language)
+            .OrderBy(l => l.DisplayOrder)
+            .ThenBy(l => l.Id)
             .ToListAsync(cancellationToken);
     }
 
@@ -49,5 +61,41 @@ public class LeaderRepository : ILeaderRepository
             _context.LeaderItems.Remove(item);
             await _context.SaveChangesAsync(cancellationToken);
         }
+    }
+
+    // Section Header Logic Implementation
+    public async Task<LeadershipHeader?> GetSectionHeaderAsync(string language,
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.LeadershipHeaders
+            .FirstOrDefaultAsync(h => h.Language == language, cancellationToken);
+    }
+
+    public async Task UpdateSectionHeaderAsync(string subtitle, string mainTitle, string language,
+        CancellationToken cancellationToken = default)
+    {
+        var existing = await _context.LeadershipHeaders
+            .FirstOrDefaultAsync(h => h.Language == language, cancellationToken);
+
+        if (existing != null)
+        {
+            existing.Subtitle = subtitle;
+            existing.MainTitle = mainTitle;
+            existing.UpdatedAt = DateTime.UtcNow;
+            _context.LeadershipHeaders.Update(existing);
+        }
+        else
+        {
+            var newHeader = new LeadershipHeader
+            {
+                Subtitle = subtitle,
+                MainTitle = mainTitle,
+                Language = language,
+                UpdatedAt = DateTime.UtcNow
+            };
+            _context.LeadershipHeaders.Add(newHeader);
+        }
+
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }

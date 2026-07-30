@@ -2,6 +2,8 @@ using GmbhSystem.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Amazon.Runtime;
+using Amazon.S3;
 using GmbhSystem.Api.Middlewares;
 using GmbhSystem.Application.Interfaces;
 using GmbhSystem.Application.Services;
@@ -12,6 +14,24 @@ using GmbhSystem.Persistence.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddPersistence(builder.Configuration);
+
+builder.Services.AddSingleton<IAmazonS3>(sp =>
+{
+    var config = sp.GetRequiredService<IConfiguration>();
+    var accessKey = config["CloudflareR2:AccessKey"]!;
+    var secretKey = config["CloudflareR2:SecretKey"]!;
+    var accountId = config["CloudflareR2:AccountId"]!;
+
+    var credentials = new BasicAWSCredentials(accessKey, secretKey);
+    return new AmazonS3Client(credentials, new AmazonS3Config
+    {
+        ServiceURL = $"https://{accountId}.r2.cloudflarestorage.com",
+        ForcePathStyle = true,
+        AuthenticationRegion = "auto",
+    });
+});
+
+builder.Services.AddScoped<IMediaService, CloudflareR2Service>();
 
 var jwtKey = builder.Configuration["Jwt:Key"] ?? builder.Configuration["Jwt:Secret"];
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
