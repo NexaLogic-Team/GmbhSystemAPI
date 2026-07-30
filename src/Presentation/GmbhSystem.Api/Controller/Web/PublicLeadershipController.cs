@@ -19,11 +19,12 @@ public class PublicLeadershipController : ControllerBase
     /// Get Leadership Section Header & Leaders List for Public Website
     /// </summary>
     [HttpGet]
-    public async Task<IActionResult> GetLeadershipSection([FromQuery] string lang = "en", CancellationToken cancellationToken = default)
+    public async Task<IActionResult> GetLeadershipSection([FromQuery] string lang = "en",
+        CancellationToken cancellationToken = default)
     {
         // Header Info
         var header = await _leaderRepository.GetSectionHeaderAsync(lang, cancellationToken);
-        
+
         // Leaders list (DisplayOrder အတိုင်း စီပြီးသား)
         var leaders = await _leaderRepository.GetAllOrderedAsync(lang, cancellationToken);
 
@@ -31,7 +32,14 @@ public class PublicLeadershipController : ControllerBase
         {
             Subtitle = header?.Subtitle ?? "BOARD OF DIRECTORS",
             MainTitle = header?.MainTitle ?? "Meet Our Leadership",
-            // Leaders = leaders
+            Leaders = leaders.Select(x => new LeaderItemDto
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Role = x.Role,
+                ImageUrl = x.ImageUrl,
+                DisplayOrder = x.DisplayOrder,
+            }).ToList()
         };
 
         return Ok(response);

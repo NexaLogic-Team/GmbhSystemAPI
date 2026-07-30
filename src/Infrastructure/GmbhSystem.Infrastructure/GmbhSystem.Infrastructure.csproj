@@ -14,7 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- ဒီလိုင်းကို <ItemGroup> ထဲမှာ ထည့်ပေးပါ -->
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   

@@ -24,7 +24,6 @@ public class MediaController : ControllerBase
         {
             using var stream = file.OpenReadStream();
             
-            // Unique Key ဖန်တီးပေးခြင်းဖြင့် နာမည်တူ တင်မိပါက ထပ်မသွားစေရန် တားဆီးခြင်း
             var uniqueFileName = $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}"; 
 
             var etag = await _mediaService.UploadFileAsync(stream, uniqueFileName, bucketName, file.ContentType);
