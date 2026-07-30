@@ -7,7 +7,6 @@ namespace GmbhSystem.Api.Controller;
 
 [Route("api/cms/leadership")]
 [ApiController]
-[Authorize]
 public class LeaderController : ControllerBase
 {
     private readonly ILeaderRepository _leaderRepository;

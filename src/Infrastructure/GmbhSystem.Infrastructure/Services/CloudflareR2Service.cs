@@ -8,7 +8,7 @@ namespace GmbhSystem.Infrastructure.Services;
 
 public interface IMediaService
 {
-    Task<string> UploadFileAsync(string filePath, string bucketName);
+    Task<string> UploadFileAsync(string filePath, string bucketName,string fileName,string contentType);
     Task<Stream> GetFileAsync(string bucketName, string key);
     Task<string> GeneratePresignedUrlAsync(string bucketName, string key);
     Task UploadContentAsync(string bucketName, string key, string content);
@@ -34,19 +34,48 @@ public class CloudflareR2Service : IMediaService
         });
     }
 
-    public async Task<string> UploadFileAsync(string filePath, string bucketName)
+    public async Task<string> UploadFileAsyncOld(string filePath, string bucketName,string fileName,string contentType)
     {
-        var request = new PutObjectRequest
+        using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+        
+        // var request = new PutObjectRequest
+        // {
+        //     FilePath = filePath,
+        //     BucketName = bucketName,
+        //     Key = Path.GetFileName(filePath),
+        //     DisablePayloadSigning = true,
+        //     DisableDefaultChecksumValidation = true,
+        //     UseChunkEncoding = false
+        // };
+        //
+        // var response = await _s3Client.PutObjectAsync(request);
+        // return response.ETag;
+        
+        var putRequest = new Amazon.S3.Model.PutObjectRequest
         {
-            FilePath = filePath,
             BucketName = bucketName,
-            Key = Path.GetFileName(filePath),
-            DisablePayloadSigning = true,
-            DisableDefaultChecksumValidation = true,
-            UseChunkEncoding = false
+            Key = fileName, // Unique file name with extension (.png / .jpg)
+            InputStream = stream,
+            ContentType = contentType // Browser က ဖတ်လို့ရမည့် Content-Type (ဥပမာ image/png)
         };
 
-        var response = await _s3Client.PutObjectAsync(request);
+        var response = await _s3Client.PutObjectAsync(putRequest);
+        return response.ETag;
+    }
+    
+    public async Task<string> UploadFileAsync(string filePath, string bucketName, string fileName, string contentType)
+    {
+        using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+
+        var putRequest = new Amazon.S3.Model.PutObjectRequest
+        {
+            BucketName = bucketName,
+            Key = fileName, // Extension ပါသော နာမည်အမှန် (ဥပမာ: uuid.png)
+            InputStream = stream,
+            ContentType = contentType // image/png သို့မဟုတ် image/jpeg
+        };
+
+        var response = await _s3Client.PutObjectAsync(putRequest);
         return response.ETag;
     }
 
