@@ -40,57 +40,21 @@ public class AuthController : ControllerBase
         return Ok(new { Token = token });
     }
 
-    // [HttpGet("profile")]
-    // [Authorize]
-    // public async Task<IActionResult> GetProfile()
-    // {
-    //     var email = User.FindFirst(ClaimTypes.Email)?.Value 
-    //                 ?? User.FindFirst(Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames.Email)?.Value
-    //                 ?? User.Claims.FirstOrDefault(c => c.Type == "email" || c.Type.Contains("emailaddress"))?.Value;
-    //
-    //     if (string.IsNullOrEmpty(email)) 
-    //     {
-    //         return Unauthorized(new { message = "Email claim not found in the provided token." });
-    //     }
-    //
-    //     string fileName = $"profiles/{email}.png";
-    //     string bucketName = "gmbh";
-    //
-    //     var mediaContent = await _mediaService.GetContentAsync(bucketName, fileName);
-    //
-    //     if (string.IsNullOrEmpty(mediaContent))
-    //     {
-    //         var user = await _userRepository.GetByEmailAsync(email);
-    //         if (user == null) return NotFound(new { message = "User not found" });
-    //
-    //         return Ok(new
-    //         {
-    //             fullName = user.FullName,
-    //             username = user.Username,
-    //             email = user.Email,
-    //             role = user.Role
-    //         });
-    //     }
-    //
-    //     var profileObj = System.Text.Json.JsonSerializer.Deserialize<object>(mediaContent);
-    //     return Ok(profileObj);
-    // }
-    
     [HttpGet("profile")]
     [Authorize]
     public async Task<IActionResult> GetProfile()
     {
-        var email = User.FindFirst(ClaimTypes.Email)?.Value 
+        var email = User.FindFirst(ClaimTypes.Email)?.Value
                     ?? User.FindFirst(Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames.Email)?.Value
                     ?? User.Claims.FirstOrDefault(c => c.Type == "email" || c.Type.Contains("emailaddress"))?.Value;
 
-        if (string.IsNullOrEmpty(email)) 
+        if (string.IsNullOrEmpty(email))
         {
             return Unauthorized(new { message = "Email claim not found in the provided token." });
         }
 
         string bucketName = "gmbh";
-    
+
         string jsonKey = $"profiles:{email}.json";
         string imageKey = $"profiles:{email}.png";
 
