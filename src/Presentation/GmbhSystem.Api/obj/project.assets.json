@@ -960,7 +960,10 @@
         },
         "runtime": {
           "bin/placeholder/GmbhSystem.Infrastructure.dll": {}
-        }
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
       },
       "GmbhSystem.Persistence/1.0.0": {
         "type": "project",
