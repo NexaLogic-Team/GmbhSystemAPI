@@ -10,8 +10,20 @@ using GmbhSystem.Application.Services;
 using GmbhSystem.Infrastructure.Services;
 using GmbhSystem.Persistence.Authentication;
 using GmbhSystem.Persistence.Repositories;
+using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 20 * 1024 * 1024; // 20MB
+});
+
+// 2. Form Multipart Upload Limit တိုးပေးရန် (ဥပမာ - 20 MB)
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 20 * 1024 * 1024; // 20MB
+});
 
 builder.Services.AddPersistence(builder.Configuration);
 
