@@ -12,6 +12,7 @@ public interface IMediaService
     Task<string> GeneratePresignedUrlAsync(string bucketName, string key);
     Task UploadContentAsync(string bucketName, string key, string content);
     Task<string?> GetContentAsync(string bucketName, string key);
+    Task DeleteFileAsync(string bucketName, string key);
 }
 
 public class CloudflareR2Service : IMediaService
@@ -86,6 +87,27 @@ public class CloudflareR2Service : IMediaService
         catch (AmazonS3Exception ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
         {
             return null;
+        }
+    }
+    
+    public async Task DeleteFileAsync(string bucketName, string key)
+    {
+        if (string.IsNullOrWhiteSpace(key)) return;
+
+        try
+        {
+            var deleteObjectRequest = new DeleteObjectRequest
+            {
+                BucketName = bucketName,
+                Key = key
+            };
+
+            await _s3Client.DeleteObjectAsync(deleteObjectRequest);
+        }
+        catch (Exception ex)
+        {
+            // Log Error according to your logging setup
+            Console.WriteLine($"[R2-DELETE-ERROR] Failed to delete key '{key}': {ex.Message}");
         }
     }
 }

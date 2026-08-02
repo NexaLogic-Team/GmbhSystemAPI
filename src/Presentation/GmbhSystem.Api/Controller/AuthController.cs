@@ -55,8 +55,8 @@ public class AuthController : ControllerBase
 
         string bucketName = "gmbh";
 
-        string jsonKey = $"profiles:{email}.json";
-        string imageKey = $"profiles:{email}.png";
+        string jsonKey = $"profiles/{email}.json";
+        string imageKey = $"{email}.png";
 
         string? profileImageUrl = null;
         try

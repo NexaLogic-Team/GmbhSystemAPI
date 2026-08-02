@@ -76,4 +76,26 @@ public class MediaController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError, new { message = $"Error generating URL: {ex.Message}" });
         }
     }
+    
+    [HttpDelete("delete")]
+    public async Task<IActionResult> DeleteFile([FromQuery] string bucketName, [FromQuery] string key)
+    {
+        _logger.LogInformation(">>> [DELETE] api/cms/media/delete called. Bucket: '{Bucket}', Key: '{Key}'", bucketName, key);
+
+        if (string.IsNullOrWhiteSpace(key) || string.IsNullOrWhiteSpace(bucketName))
+        {
+            return BadRequest(new { message = "Bucket name and Key are required." });
+        }
+
+        try
+        {
+            await _mediaService.DeleteFileAsync(bucketName, key);
+            return Ok(new { message = "File deleted successfully from R2." });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, ">>> Delete File EXCEPTION: {ErrorMessage}", ex.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError, new { message = $"Error deleting file: {ex.Message}" });
+        }
+    }
 }

@@ -1,6 +1,7 @@
 using GmbhSystem.Application.Interfaces;
 using GmbhSystem.Domain.Entities;
 using GmbhSystem.Application.Dtos;
+using GmbhSystem.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GmbhSystem.Api.Controller;
@@ -10,10 +11,12 @@ namespace GmbhSystem.Api.Controller;
 public class LeaderController : ControllerBase
 {
     private readonly ILeaderRepository _leaderRepository;
+    private readonly IMediaService _mediaService; // Inject MediaService
 
-    public LeaderController(ILeaderRepository leaderRepository)
+    public LeaderController(ILeaderRepository leaderRepository, IMediaService mediaService)
     {
         _leaderRepository = leaderRepository;
+        _mediaService = mediaService;
     }
 
     /// <summary>
@@ -151,17 +154,105 @@ public class LeaderController : ControllerBase
         return Ok(new { message = "Leader profile updated successfully in both EN and DE!" });
     }
 
+    // [HttpDelete("{id:int}")]
+    // public async Task<IActionResult> DeleteLeader(int id, CancellationToken cancellationToken = default)
+    // {
+    //     var existing = await _leaderRepository.GetByIdAsync(id, cancellationToken);
+    //     if (existing == null)
+    //     {
+    //         return NotFound(new { message = "Leader not found." });
+    //     }
+    //
+    //     await _leaderRepository.DeleteAsync(id, cancellationToken);
+    //     return Ok(new { message = "Leader deleted successfully." });
+    // }
+
+    // [HttpDelete("{id:int}")]
+    // public async Task<IActionResult> DeleteLeader(int id, CancellationToken cancellationToken = default)
+    // {
+    //     // 1. ဖျက်မည့် Target Leader ကို ယူမည်
+    //     var currentLeader = await _leaderRepository.GetByIdAsync(id, cancellationToken);
+    //     if (currentLeader == null)
+    //     {
+    //         return NotFound(new { message = "Leader profile not found." });
+    //     }
+    //
+    //     // 2. EN နှင့် DE Data အားလုံးကို ရှာယူမည်
+    //     var allEn = await _leaderRepository.GetAllAsync("en", cancellationToken);
+    //     var allDe = await _leaderRepository.GetAllAsync("de", cancellationToken);
+    //
+    //     // 3. Name တူညီသော (သို့မဟုတ် ID တူညီသော) EN / DE Record နှစ်ခုစလုံး၏ ID များကို ရှာမည်
+    //     var leaderEn = allEn.FirstOrDefault(x =>
+    //         x.Id == id || x.Name.Trim().Equals(currentLeader.Name.Trim(), StringComparison.OrdinalIgnoreCase));
+    //
+    //     var leaderDe = allDe.FirstOrDefault(x =>
+    //         x.Id == id || x.Name.Trim().Equals(currentLeader.Name.Trim(), StringComparison.OrdinalIgnoreCase));
+    //
+    //     // 4. English Record ရှိပါက Delete လုပ်မည်
+    //     if (leaderEn != null)
+    //     {
+    //         await _leaderRepository.DeleteAsync(leaderEn.Id, cancellationToken);
+    //     }
+    //
+    //     // 5. German Record ရှိပါက Delete လုပ်မည်
+    //     if (leaderDe != null)
+    //     {
+    //         await _leaderRepository.DeleteAsync(leaderDe.Id, cancellationToken);
+    //     }
+    //
+    //     // သီးခြား Link မရှိဘဲ ကျန်ခဲ့နိုင်သော တိုက်ရိုက် ရွေးချယ်ထားသည့် Record ကိုလည်း သေချာအောင် ဖျက်မည်
+    //     if ((leaderEn == null || leaderEn.Id != id) && (leaderDe == null || leaderDe.Id != id))
+    //     {
+    //         await _leaderRepository.DeleteAsync(id, cancellationToken);
+    //     }
+    //
+    //     return Ok(new { message = "Leader profile deleted successfully in both EN and DE!" });
+    // }
+    
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteLeader(int id, CancellationToken cancellationToken = default)
     {
-        var existing = await _leaderRepository.GetByIdAsync(id, cancellationToken);
-        if (existing == null)
+        var currentLeader = await _leaderRepository.GetByIdAsync(id, cancellationToken);
+        if (currentLeader == null)
         {
-            return NotFound(new { message = "Leader not found." });
+            return NotFound(new { message = "Leader profile not found." });
         }
 
-        await _leaderRepository.DeleteAsync(id, cancellationToken);
-        return Ok(new { message = "Leader deleted successfully." });
+        var allEn = await _leaderRepository.GetAllAsync("en", cancellationToken);
+        var allDe = await _leaderRepository.GetAllAsync("de", cancellationToken);
+
+        var leaderEn = allEn.FirstOrDefault(x =>
+            x.Id == id || x.Name.Trim().Equals(currentLeader.Name.Trim(), StringComparison.OrdinalIgnoreCase));
+
+        var leaderDe = allDe.FirstOrDefault(x =>
+            x.Id == id || x.Name.Trim().Equals(currentLeader.Name.Trim(), StringComparison.OrdinalIgnoreCase));
+
+        // 1. R2 ထဲက သက်ဆိုင်ရာ Image Key ကို ယူပြီး ဖျက်မည်
+        var imageKey = currentLeader.ImageUrl ?? leaderEn?.ImageUrl ?? leaderDe?.ImageUrl;
+        if (!string.IsNullOrEmpty(imageKey))
+        {
+            // URL direct ဖြစ်နေပါက Key ဖြတ်ယူခြင်း သို့မဟုတ် Key သီးသန့်ဖြစ်ပါက တိုက်ရိုက်ဖျက်ခြင်း
+            await _mediaService.DeleteFileAsync("gmbh", imageKey);
+        }
+
+        // 2. English Record ရှိပါက Delete လုပ်မည်
+        if (leaderEn != null)
+        {
+            await _leaderRepository.DeleteAsync(leaderEn.Id, cancellationToken);
+        }
+
+        // 3. German Record ရှိပါက Delete လုပ်မည်
+        if (leaderDe != null)
+        {
+            await _leaderRepository.DeleteAsync(leaderDe.Id, cancellationToken);
+        }
+
+        if ((leaderEn == null || leaderEn.Id != id) && (leaderDe == null || leaderDe.Id != id))
+        {
+            await _leaderRepository.DeleteAsync(id, cancellationToken);
+        }
+
+        return Ok(new { message = "Leader profile and image deleted successfully in both EN and DE!" });
     }
 
     [HttpGet("status")]

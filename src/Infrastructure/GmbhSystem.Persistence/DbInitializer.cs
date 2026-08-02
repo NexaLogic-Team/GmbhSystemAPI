@@ -18,10 +18,10 @@ public static class DbInitializer
             var adminUser = new User
             {
                 Id = Guid.NewGuid().ToString(),
-                Username = "gmbh",
-                Email = "gmbh@gmail.com",
+                Username = "winhtet",
+                Email = "winhtet@irrawaddy-gmbh.de",
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword("123@gmbh.com"),
-                Role = "Admin",
+                Role = "ADMIN",
                 CreatedAt = DateTime.UtcNow
             };
 
