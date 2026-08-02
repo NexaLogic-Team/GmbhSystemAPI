@@ -96,4 +96,33 @@ public class AuthController : ControllerBase
             profileImage = profileImageUrl
         });
     }
+    [HttpPost("change-password")]
+    [Authorize]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto request, CancellationToken cancellationToken)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        // JWT Token ထဲမှ Logged-in email ကို ရယူခြင်း
+        var email = User.FindFirst(ClaimTypes.Email)?.Value
+                    ?? User.FindFirst(Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames.Email)?.Value
+                    ?? User.Claims.FirstOrDefault(c => c.Type == "email" || c.Type.Contains("emailaddress"))?.Value;
+
+        if (string.IsNullOrEmpty(email))
+        {
+            return Unauthorized(new { message = "Token ထဲတွင် Email Claim မတွေ့ရှိပါ။" });
+        }
+
+        // Password ပြောင်းလဲခြင်း Logic ခေါ်ယူခြင်း
+        var result = await _authService.ChangePasswordAsync(email, request, cancellationToken);
+
+        if (!result)
+        {
+            return BadRequest(new { message = "လက်ရှိ စကားဝှက် မှားယွင်းနေပါသည် သို့မဟုတ် အသုံးပြုသူ မတွေ့ပါ။" });
+        }
+
+        return Ok(new { message = "စကားဝှက် အောင်မြင်စွာ ပြောင်းလဲပြီးပါပြီ။" });
+    }
 }

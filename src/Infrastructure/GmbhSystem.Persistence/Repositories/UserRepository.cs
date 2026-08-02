@@ -18,4 +18,9 @@ public class UserRepository : IUserRepository
         return await _dbContext.Users
             .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
     }
+    public async Task UpdateAsync(User user, CancellationToken cancellationToken = default)
+    {
+        _dbContext.Users.Update(user);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+    }
 }
