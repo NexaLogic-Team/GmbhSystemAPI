@@ -12,6 +12,9 @@ public class GmbhSystemDbContext : DbContext
     public DbSet<ContentItem> ContentItems => Set<ContentItem>();
     public DbSet<LeaderItem> LeaderItems { get; set; }
     public DbSet<LeadershipHeader> LeadershipHeaders { get; set; } // ထပ်ပေါင်းရန်
+    // Services Section
+    public DbSet<ServiceItem> ServiceItems { get; set; }
+    public DbSet<ServiceHeader> ServiceHeaders { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

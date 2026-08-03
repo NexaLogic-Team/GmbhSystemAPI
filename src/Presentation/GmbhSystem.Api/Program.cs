@@ -97,6 +97,7 @@ builder.Services.AddOpenApi(options =>
     });
 });
 
+builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
 builder.Services.AddScoped<ILeaderRepository, LeaderRepository>();
 builder.Services.AddScoped<IMediaService, CloudflareR2Service>();
 builder.Services.AddScoped<IContentRepository, ContentRepository>(); 

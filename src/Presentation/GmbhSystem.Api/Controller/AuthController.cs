@@ -67,38 +67,24 @@ public class AuthController : ControllerBase
         {
             profileImageUrl = null;
         }
-
-        var jsonContent = await _mediaService.GetContentAsync(bucketName, jsonKey);
-
-        if (string.IsNullOrEmpty(jsonContent))
-        {
-            var user = await _userRepository.GetByEmailAsync(email);
-            if (user == null) return NotFound(new { message = "User not found" });
-
-            return Ok(new
-            {
-                fullName = user.FullName,
-                username = user.Username,
-                email = user.Email,
-                role = user.Role,
-                profileImage = profileImageUrl
-            });
-        }
-
-        var profileObj = System.Text.Json.JsonSerializer.Deserialize<System.Text.Json.JsonElement>(jsonContent);
+        
+        var user = await _userRepository.GetByEmailAsync(email);
+        if (user == null) return NotFound(new { message = "User not found" });
 
         return Ok(new
         {
-            fullName = profileObj.TryGetProperty("fullName", out var fn) ? fn.GetString() : "",
-            username = profileObj.TryGetProperty("username", out var un) ? un.GetString() : "",
-            email = email,
-            role = profileObj.TryGetProperty("role", out var r) ? r.GetString() : "",
+            fullName = user.FullName,
+            username = user.Username,
+            email = user.Email,
+            role = user.Role,
             profileImage = profileImageUrl
         });
     }
+
     [HttpPost("change-password")]
     [Authorize]
-    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto request, CancellationToken cancellationToken)
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto request,
+        CancellationToken cancellationToken)
     {
         if (!ModelState.IsValid)
         {

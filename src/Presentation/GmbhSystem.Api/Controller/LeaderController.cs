@@ -153,61 +153,6 @@ public class LeaderController : ControllerBase
 
         return Ok(new { message = "Leader profile updated successfully in both EN and DE!" });
     }
-
-    // [HttpDelete("{id:int}")]
-    // public async Task<IActionResult> DeleteLeader(int id, CancellationToken cancellationToken = default)
-    // {
-    //     var existing = await _leaderRepository.GetByIdAsync(id, cancellationToken);
-    //     if (existing == null)
-    //     {
-    //         return NotFound(new { message = "Leader not found." });
-    //     }
-    //
-    //     await _leaderRepository.DeleteAsync(id, cancellationToken);
-    //     return Ok(new { message = "Leader deleted successfully." });
-    // }
-
-    // [HttpDelete("{id:int}")]
-    // public async Task<IActionResult> DeleteLeader(int id, CancellationToken cancellationToken = default)
-    // {
-    //     // 1. ဖျက်မည့် Target Leader ကို ယူမည်
-    //     var currentLeader = await _leaderRepository.GetByIdAsync(id, cancellationToken);
-    //     if (currentLeader == null)
-    //     {
-    //         return NotFound(new { message = "Leader profile not found." });
-    //     }
-    //
-    //     // 2. EN နှင့် DE Data အားလုံးကို ရှာယူမည်
-    //     var allEn = await _leaderRepository.GetAllAsync("en", cancellationToken);
-    //     var allDe = await _leaderRepository.GetAllAsync("de", cancellationToken);
-    //
-    //     // 3. Name တူညီသော (သို့မဟုတ် ID တူညီသော) EN / DE Record နှစ်ခုစလုံး၏ ID များကို ရှာမည်
-    //     var leaderEn = allEn.FirstOrDefault(x =>
-    //         x.Id == id || x.Name.Trim().Equals(currentLeader.Name.Trim(), StringComparison.OrdinalIgnoreCase));
-    //
-    //     var leaderDe = allDe.FirstOrDefault(x =>
-    //         x.Id == id || x.Name.Trim().Equals(currentLeader.Name.Trim(), StringComparison.OrdinalIgnoreCase));
-    //
-    //     // 4. English Record ရှိပါက Delete လုပ်မည်
-    //     if (leaderEn != null)
-    //     {
-    //         await _leaderRepository.DeleteAsync(leaderEn.Id, cancellationToken);
-    //     }
-    //
-    //     // 5. German Record ရှိပါက Delete လုပ်မည်
-    //     if (leaderDe != null)
-    //     {
-    //         await _leaderRepository.DeleteAsync(leaderDe.Id, cancellationToken);
-    //     }
-    //
-    //     // သီးခြား Link မရှိဘဲ ကျန်ခဲ့နိုင်သော တိုက်ရိုက် ရွေးချယ်ထားသည့် Record ကိုလည်း သေချာအောင် ဖျက်မည်
-    //     if ((leaderEn == null || leaderEn.Id != id) && (leaderDe == null || leaderDe.Id != id))
-    //     {
-    //         await _leaderRepository.DeleteAsync(id, cancellationToken);
-    //     }
-    //
-    //     return Ok(new { message = "Leader profile deleted successfully in both EN and DE!" });
-    // }
     
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteLeader(int id, CancellationToken cancellationToken = default)
