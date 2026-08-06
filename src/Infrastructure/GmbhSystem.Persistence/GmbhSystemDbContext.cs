@@ -15,6 +15,7 @@ public class GmbhSystemDbContext : DbContext
     // Services Section
     public DbSet<ServiceItem> ServiceItems { get; set; }
     public DbSet<ServiceHeader> ServiceHeaders { get; set; }
+    public DbSet<HomeSection> HomeSections => Set<HomeSection>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

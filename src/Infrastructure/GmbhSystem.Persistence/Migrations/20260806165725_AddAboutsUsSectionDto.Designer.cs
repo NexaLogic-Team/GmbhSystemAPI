@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GmbhSystem.Persistence.Migrations
 {
     [DbContext(typeof(GmbhSystemDbContext))]
-    [Migration("20260730192631_AddUserFullName")]
-    partial class AddUserFullName
+    [Migration("20260806165725_AddAboutsUsSectionDto")]
+    partial class AddAboutsUsSectionDto
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -55,6 +55,46 @@ namespace GmbhSystem.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ContentItems");
+                });
+
+            modelBuilder.Entity("GmbhSystem.Domain.Entities.HomeSection", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description1De")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description1En")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("HeroMediaUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("MainTitleDe")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("MainTitleEn")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("MediaType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("HomeSections");
                 });
 
             modelBuilder.Entity("GmbhSystem.Domain.Entities.LeaderItem", b =>
@@ -125,6 +165,69 @@ namespace GmbhSystem.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("LeadershipHeaders");
+                });
+
+            modelBuilder.Entity("GmbhSystem.Domain.Entities.ServiceHeader", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Language")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("MainTitle")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Subtitle")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ServiceHeaders");
+                });
+
+            modelBuilder.Entity("GmbhSystem.Domain.Entities.ServiceItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Language")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ServiceItems");
                 });
 
             modelBuilder.Entity("GmbhSystem.Domain.Entities.User", b =>
