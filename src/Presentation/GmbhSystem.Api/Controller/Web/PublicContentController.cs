@@ -16,7 +16,7 @@ public class PublicContentController : ControllerBase
     private readonly ILeaderRepository _leaderRepository;
     private readonly IAboutRepository _aboutRepository;
     private readonly IMediaService _mediaService;
-    private const string BucketName = "gmbh"; // Cloudflare R2 / S3 Bucket Name
+    private const string BucketName = "gmbh";
 
     public PublicContentController(
         GmbhSystemDbContext context,
@@ -32,11 +32,9 @@ public class PublicContentController : ControllerBase
         _mediaService = mediaService;
     }
 
-    /// <summary>
-    /// Get Combined Public Data (Home, Services, Leadership, About Us) in one request
-    /// </summary>
     [HttpGet]
-    public async Task<IActionResult> GetPublicContent([FromQuery] string lang = "en", CancellationToken cancellationToken = default)
+    public async Task<IActionResult> GetPublicContent([FromQuery] string lang = "en",
+        CancellationToken cancellationToken = default)
     {
         var normalizedLang = lang.ToLower();
 
@@ -96,8 +94,10 @@ public class PublicContentController : ControllerBase
 
         var servicesData = new ServiceSectionDto
         {
-            Subtitle = serviceHeader?.Subtitle ?? (normalizedLang == "de" ? "BILATERALE EXPERTISE" : "BILATERAL EXPERTISE"),
-            MainTitle = serviceHeader?.MainTitle ?? (normalizedLang == "de" ? "Unsere Dienstleistungen" : "Our Services"),
+            Subtitle = serviceHeader?.Subtitle ??
+                       (normalizedLang == "de" ? "BILATERALE EXPERTISE" : "BILATERAL EXPERTISE"),
+            MainTitle = serviceHeader?.MainTitle ??
+                        (normalizedLang == "de" ? "Unsere Dienstleistungen" : "Our Services"),
             Services = serviceDtos
         };
 
@@ -128,7 +128,8 @@ public class PublicContentController : ControllerBase
         var leadershipData = new LeadershipSectionDto
         {
             Subtitle = leaderHeader?.Subtitle ?? (normalizedLang == "de" ? "VORSTAND" : "BOARD OF DIRECTORS"),
-            MainTitle = leaderHeader?.MainTitle ?? (normalizedLang == "de" ? "Unsere Führungskräfte" : "Meet Our Leadership"),
+            MainTitle = leaderHeader?.MainTitle ??
+                        (normalizedLang == "de" ? "Unsere Führungskräfte" : "Meet Our Leadership"),
             Leaders = leaderDtos
         };
 
@@ -146,7 +147,6 @@ public class PublicContentController : ControllerBase
         {
             var aboutImageUrl = await ResolvePresignedUrlAsync(aboutRaw.ImageUrl);
 
-            // Subtitle, MainTitle နှင့် Paragraph များအား ဘာသာစကားအလိုက် စစ်ထုတ်ခြင်း
             var subtitle = normalizedLang == "de" ? aboutRaw.SubTitleDe : aboutRaw.SubTitleEn;
             var mainTitle = normalizedLang == "de" ? aboutRaw.MainTitleDe : aboutRaw.MainTitleEn;
 
@@ -155,8 +155,8 @@ public class PublicContentController : ControllerBase
             var p3 = normalizedLang == "de" ? aboutRaw.Paragraph3De : aboutRaw.Paragraph3En;
             var p4 = normalizedLang == "de" ? aboutRaw.Paragraph4De : aboutRaw.Paragraph4En;
 
-            // Paragraph များကို တစ်ခုတည်းအဖြစ် ပေါင်းစပ်ခြင်း (သို့မဟုတ် DTO ပေါ်မူတည်၍ သီးသန့်သုံးနိုင်သည်)
-            var fullDescription = string.Join("\n\n", new[] { p1, p2, p3, p4 }.Where(p => !string.IsNullOrWhiteSpace(p)));
+            var fullDescription =
+                string.Join("\n\n", new[] { p1, p2, p3, p4 }.Where(p => !string.IsNullOrWhiteSpace(p)));
 
             aboutData = new AboutPublicDto
             {
@@ -202,6 +202,7 @@ public class PublicContentController : ControllerBase
             return keyOrUrl;
         }
     }
+
     public class PublicCombinedContentDto
     {
         public HomeSectionPublicDto Home { get; set; } = new();

@@ -30,7 +30,7 @@ public class CloudflareR2Service : IMediaService
         {
             InputStream = stream,
             BucketName = bucketName,
-            Key = fileName, // မူရင်း File Name ကို Key အဖြစ် သုံးမည်
+            Key = fileName,
             ContentType = contentType,
             DisablePayloadSigning = true,
             DisableDefaultChecksumValidation = true,
@@ -54,7 +54,7 @@ public class CloudflareR2Service : IMediaService
             BucketName = bucketName,
             Key = key,
             Verb = HttpVerb.GET,
-            Expires = DateTime.UtcNow.AddDays(7) // UTC သုံးထားသည်
+            Expires = DateTime.UtcNow.AddDays(7)
         };
 
         return await Task.FromResult(_s3Client.GetPreSignedURL(presign));
@@ -89,7 +89,7 @@ public class CloudflareR2Service : IMediaService
             return null;
         }
     }
-    
+
     public async Task DeleteFileAsync(string bucketName, string key)
     {
         if (string.IsNullOrWhiteSpace(key)) return;
@@ -106,7 +106,6 @@ public class CloudflareR2Service : IMediaService
         }
         catch (Exception ex)
         {
-            // Log Error according to your logging setup
             Console.WriteLine($"[R2-DELETE-ERROR] Failed to delete key '{key}': {ex.Message}");
         }
     }

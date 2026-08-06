@@ -16,13 +16,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.Limits.MaxRequestBodySize = 20 * 1024 * 1024; // 20MB
+    options.Limits.MaxRequestBodySize = 20 * 1024 * 1024;
 });
 
-// 2. Form Multipart Upload Limit တိုးပေးရန် (ဥပမာ - 20 MB)
 builder.Services.Configure<FormOptions>(options =>
 {
-    options.MultipartBodyLengthLimit = 20 * 1024 * 1024; // 20MB
+    options.MultipartBodyLengthLimit = 20 * 1024 * 1024;
 });
 
 builder.Services.AddPersistence(builder.Configuration);

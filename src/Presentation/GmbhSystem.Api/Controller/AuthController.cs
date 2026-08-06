@@ -67,7 +67,7 @@ public class AuthController : ControllerBase
         {
             profileImageUrl = null;
         }
-        
+
         var user = await _userRepository.GetByEmailAsync(email);
         if (user == null) return NotFound(new { message = "User not found" });
 
@@ -91,24 +91,22 @@ public class AuthController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        // JWT Token ထဲမှ Logged-in email ကို ရယူခြင်း
         var email = User.FindFirst(ClaimTypes.Email)?.Value
                     ?? User.FindFirst(Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames.Email)?.Value
                     ?? User.Claims.FirstOrDefault(c => c.Type == "email" || c.Type.Contains("emailaddress"))?.Value;
 
         if (string.IsNullOrEmpty(email))
         {
-            return Unauthorized(new { message = "Token ထဲတွင် Email Claim မတွေ့ရှိပါ။" });
+            return Unauthorized(new { message = "Email claim not found in token." });
         }
 
-        // Password ပြောင်းလဲခြင်း Logic ခေါ်ယူခြင်း
         var result = await _authService.ChangePasswordAsync(email, request, cancellationToken);
 
         if (!result)
         {
-            return BadRequest(new { message = "လက်ရှိ စကားဝှက် မှားယွင်းနေပါသည် သို့မဟုတ် အသုံးပြုသူ မတွေ့ပါ။" });
+            return BadRequest(new { message = "Incorrect current password or user not found." });
         }
 
-        return Ok(new { message = "စကားဝှက် အောင်မြင်စွာ ပြောင်းလဲပြီးပါပြီ။" });
+        return Ok(new { message = "Password changed successfully." });
     }
 }

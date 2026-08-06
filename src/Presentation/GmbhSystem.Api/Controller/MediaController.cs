@@ -17,7 +17,7 @@ public class MediaController : ControllerBase
     }
 
     [HttpPost("upload")]
-    [RequestSizeLimit(100 * 1024 * 1024)] // 20MB
+    [RequestSizeLimit(100 * 1024 * 1024)]
     [RequestFormLimits(MultipartBodyLengthLimit = 100 * 1024 * 1024)]
     public async Task<IActionResult> UploadFile(IFormFile file, [FromQuery] string bucketName)
     {

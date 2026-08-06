@@ -13,21 +13,21 @@ public static class DbInitializer
 
         await context.Database.MigrateAsync();
 
-        // if (!await context.Set<User>().AnyAsync(u => u.Username == "gmbh"))
-        // {
-        //     var adminUser = new User
-        //     {
-        //         Id = Guid.NewGuid().ToString(),
-        //         Username = "winhtet",
-        //         Email = "winhtet@irrawaddy-gmbh.de",
-        //         PasswordHash = BCrypt.Net.BCrypt.HashPassword("123@gmbh.com"),
-        //         Role = "ADMIN",
-        //         CreatedAt = DateTime.UtcNow
-        //     };
-        //
-        //     context.Set<User>().Add(adminUser);
-        //     await context.SaveChangesAsync();
-        // }
+        if (!await context.Set<User>().AnyAsync(u => u.Username == "gmbh"))
+        {
+            var adminUser = new User
+            {
+                Id = Guid.NewGuid().ToString(),
+                Username = "winhtetaung",
+                Email = "winhtet@irrawaddy-gmbh.de",
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("123@gmbh.com"),
+                Role = "ADMIN",
+                CreatedAt = DateTime.UtcNow
+            };
+        
+            context.Set<User>().Add(adminUser);
+            await context.SaveChangesAsync();
+        }
         
         if (!context.ContentItems.Any(c => c.Section == "Home"))
         {

@@ -13,22 +13,19 @@ public class AboutController : ControllerBase
     private readonly IMediaService _mediaService;
     private readonly ILogger<AboutController> _logger;
 
-    public AboutController(IAboutRepository aboutRepository, IMediaService mediaService, ILogger<AboutController> logger)
+    public AboutController(IAboutRepository aboutRepository, IMediaService mediaService,
+        ILogger<AboutController> logger)
     {
         _aboutRepository = aboutRepository;
         _mediaService = mediaService;
         _logger = logger;
     }
 
-    /// <summary>
-    /// Dual Language Form အတွက် About Content တစ်ခုလုံးယူရန်
-    /// </summary>
     [HttpGet]
     public async Task<IActionResult> GetAboutSection(CancellationToken cancellationToken = default)
     {
         var result = await _aboutRepository.GetAboutSectionAsync(cancellationToken);
-        
-        // ImageKey ကို Presigned URL ပြောင်းပေးရန် (လိုအပ်ပါက)
+
         if (!string.IsNullOrWhiteSpace(result?.ImageUrl) && !result.ImageUrl.StartsWith("http"))
         {
             try
@@ -44,11 +41,8 @@ public class AboutController : ControllerBase
         return Ok(result ?? new AboutSectionDto());
     }
 
-    /// <summary>
-    /// EN + DE Content များကို တစ်ပြိုင်နက် Update ပြုလုပ်ရန်
-    /// </summary>
-    [HttpPut]
-    public async Task<IActionResult> UpdateAboutSection([FromBody] AboutSectionDto request, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> UpdateAboutSection([FromBody] AboutSectionDto request,
+        CancellationToken cancellationToken = default)
     {
         if (request == null)
         {

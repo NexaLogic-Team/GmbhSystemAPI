@@ -18,11 +18,9 @@ public class PublicAboutController : ControllerBase
         _mediaService = mediaService;
     }
 
-    /// <summary>
-    /// Get About Us Section Data for Public Website
-    /// </summary>
     [HttpGet]
-    public async Task<IActionResult> GetAboutSection([FromQuery] string lang = "en", CancellationToken cancellationToken = default)
+    public async Task<IActionResult> GetAboutSection([FromQuery] string lang = "en",
+        CancellationToken cancellationToken = default)
     {
         var normalizedLang = lang.ToLower();
         var aboutRaw = await _aboutRepository.GetAboutSectionAsync(cancellationToken);
@@ -34,7 +32,6 @@ public class PublicAboutController : ControllerBase
 
         var imageUrl = aboutRaw.ImageUrl;
 
-        // Image Key သာဖြစ်ပါက Presigned URL သို့ ပြောင်းလဲပေးမည်
         if (!string.IsNullOrEmpty(imageUrl) && !imageUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase))
         {
             try
@@ -43,11 +40,10 @@ public class PublicAboutController : ControllerBase
             }
             catch
             {
-                // URL Generate မရပါက Key အတိုင်း ထားမည်
+                
             }
         }
 
-        // Language အလိုက် Subtitle, MainTitle နှင့် Paragraph များကို ရွေးထုတ်ခြင်း
         var subtitle = normalizedLang == "de" ? aboutRaw.SubTitleDe : aboutRaw.SubTitleEn;
         var mainTitle = normalizedLang == "de" ? aboutRaw.MainTitleDe : aboutRaw.MainTitleEn;
 
@@ -56,7 +52,6 @@ public class PublicAboutController : ControllerBase
         var p3 = normalizedLang == "de" ? aboutRaw.Paragraph3De : aboutRaw.Paragraph3En;
         var p4 = normalizedLang == "de" ? aboutRaw.Paragraph4De : aboutRaw.Paragraph4En;
 
-        // Paragraph များကို Full String အဖြစ် ပေါင်းစပ်ခြင်း
         var fullDescription = string.Join("\n\n", new[] { p1, p2, p3, p4 }.Where(p => !string.IsNullOrWhiteSpace(p)));
 
         var response = new PublicContentController.AboutPublicDto

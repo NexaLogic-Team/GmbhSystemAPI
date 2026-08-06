@@ -1,7 +1,6 @@
 using GmbhSystem.Application.Dtos;
 using GmbhSystem.Application.Interfaces;
 using GmbhSystem.Domain.Entities;
-using GmbhSystem.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GmbhSystem.Api.Controller;
@@ -11,12 +10,10 @@ namespace GmbhSystem.Api.Controller;
 public class ServiceController : ControllerBase
 {
     private readonly IServiceRepository _serviceRepository;
-    private readonly IMediaService _mediaService;
 
-    public ServiceController(IServiceRepository serviceRepository, IMediaService mediaService)
+    public ServiceController(IServiceRepository serviceRepository)
     {
         _serviceRepository = serviceRepository;
-        _mediaService = mediaService;
     }
 
     [HttpGet]
@@ -35,7 +32,6 @@ public class ServiceController : ControllerBase
         var current = await _serviceRepository.GetByIdAsync(id, cancellationToken);
         if (current == null) return NotFound(new { message = "Service not found." });
 
-        // Fetch all records to map EN and DE pair
         var allEn = await _serviceRepository.GetAllAsync("en", cancellationToken);
         var allDe = await _serviceRepository.GetAllAsync("de", cancellationToken);
 
@@ -45,7 +41,6 @@ public class ServiceController : ControllerBase
         if (current.Language.Equals("en", StringComparison.OrdinalIgnoreCase))
         {
             serviceEn = current;
-            // If ImageUrl matches or position matches, pair it (or default to current)
             serviceDe = allDe.FirstOrDefault(x => x.ImageUrl == current.ImageUrl)
                         ?? allDe.FirstOrDefault(x => x.Id == id);
         }
@@ -83,7 +78,6 @@ public class ServiceController : ControllerBase
             return NotFound(new { message = "Service not found." });
         }
 
-        // Determine target language from entity or DTO payload
         if (service.Language.Equals("en", StringComparison.OrdinalIgnoreCase))
         {
             if (!string.IsNullOrWhiteSpace(request.TitleEn))
@@ -103,7 +97,6 @@ public class ServiceController : ControllerBase
             service.Description = request.DescriptionDe ?? string.Empty;
         }
 
-        // Update image if a new image was uploaded
         if (!string.IsNullOrEmpty(request.ImageUrl))
         {
             service.ImageUrl = request.ImageUrl;
@@ -149,24 +142,20 @@ public class ServiceController : ControllerBase
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteService(int id, CancellationToken cancellationToken = default)
     {
-        // 1. Get the current item being deleted
         var currentItem = await _serviceRepository.GetByIdAsync(id, cancellationToken);
         if (currentItem == null)
         {
             return NotFound(new { message = "Service not found." });
         }
 
-        // 2. Fetch all services across both languages
         var allEn = await _serviceRepository.GetAllAsync("en", cancellationToken);
         var allDe = await _serviceRepository.GetAllAsync("de", cancellationToken);
 
-        // 3. Find matching records across EN and DE (matched by primary key or shared ImageUrl)
         var itemEn = allEn.FirstOrDefault(x =>
             x.Id == id || (!string.IsNullOrEmpty(currentItem.ImageUrl) && x.ImageUrl == currentItem.ImageUrl));
         var itemDe = allDe.FirstOrDefault(x =>
             x.Id == id || (!string.IsNullOrEmpty(currentItem.ImageUrl) && x.ImageUrl == currentItem.ImageUrl));
 
-        // Fallback if no cross-match by ImageUrl: use current item
         if (currentItem.Language.Equals("en", StringComparison.OrdinalIgnoreCase))
         {
             itemEn ??= currentItem;
@@ -176,13 +165,11 @@ public class ServiceController : ControllerBase
             itemDe ??= currentItem;
         }
 
-        // 4. Delete English record if present
         if (itemEn != null)
         {
             await _serviceRepository.DeleteAsync(itemEn.Id, cancellationToken);
         }
 
-        // 5. Delete German record if present
         if (itemDe != null && itemDe.Id != itemEn?.Id)
         {
             await _serviceRepository.DeleteAsync(itemDe.Id, cancellationToken);

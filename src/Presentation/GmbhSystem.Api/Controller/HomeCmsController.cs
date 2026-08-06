@@ -18,9 +18,6 @@ public class HomeCmsController : ControllerBase
         _context = context;
     }
 
-    /// <summary>
-    /// Gets current Home Section Hero data (or public display).
-    /// </summary>
     [HttpGet]
     [AllowAnonymous]
     public async Task<ActionResult<HomeSectionDto>> GetHomeSection()
@@ -51,9 +48,6 @@ public class HomeCmsController : ControllerBase
         });
     }
 
-    /// <summary>
-    /// Updates or creates the single Home Section entry.
-    /// </summary>
     [HttpPut]
     [Authorize]
     public async Task<IActionResult> UpdateHomeSection([FromBody] HomeSectionDto dto)

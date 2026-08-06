@@ -18,7 +18,7 @@ public class LeaderRepository : ILeaderRepository
     {
         return await _context.LeaderItems
             .Where(l => l.Language == language)
-            .OrderBy(l => l.DisplayOrder) // DisplayOrder မရှိသေးရင် Id အလိုက် စီပေးပါမယ်
+            .OrderBy(l => l.DisplayOrder)
             .ThenBy(l => l.Id)
             .ToListAsync(cancellationToken);
     }
